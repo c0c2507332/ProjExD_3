@@ -173,6 +173,13 @@ def main():
         if bomb is not None:
             if bird.rct.collidedict(bomb.rct):
                 bird.change_img(8, screen)
+                
+                #練習4
+                fonto = pg.font.Font(None, 80)
+                txt = fonto.render("Game Over", True, (255,0,0))
+                screen.blit(txt, [WIDTH // 2 - 150, HEIGHT // 2])
+                
+                #練習2
                 pg.display.update()
                 time.sleep(1)
                 return 
