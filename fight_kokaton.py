@@ -180,6 +180,13 @@ def main():
             if beam.rct.collidedict(bomb.rct):
                 beam = None
                 bomb = None
+                
+        #練習3
+        if bomb is not None and beam is not None:
+            if beam.rct.collidedict(bomb.rct):
+                beam = None
+                bomb = None
+                bird.change_img(6, screen)
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
