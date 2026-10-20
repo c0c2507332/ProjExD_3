@@ -139,6 +139,29 @@ class Bomb:
             self.vy *= -1
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
+        
+        
+#追加部分
+#演習1
+class Score:
+    """
+    打ち落とした爆弾の数を表示するスコアクラス
+    """
+    def __init__(self):
+        self.fonto = pg.font.Font(None, 50)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.img = self.fonto.render(f"Score: {self.score}", True, self.color)
+        self.rct = self.img.get_rect()
+        self.rct.center = (100, HEIGHT - 50)
+        
+    def update(self, screen: pg.Surface):
+        """
+        現在のスコア文字列を描画する
+        """
+        self.img = self.fonto.render(f"Score: {self.score}", True, self.color)
+        screen.blit(self.img, self.rct)
+        
 
 
 def main():
@@ -150,6 +173,13 @@ def main():
     beam = None  # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
+    
+    
+    #追加部分
+    #演習1
+    score = Score()
+    
+    
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -171,19 +201,13 @@ def main():
         
         #練習2
         if bomb is not None:
-            if bird.rct.collidedict(bomb.rct):
+            if bird.rct.colliderect(bomb.rct):
                 bird.change_img(8, screen)
                 pg.display.update()
                 time.sleep(1)
                 return 
         if bomb is not None and beam is not None:
-            if beam.rct.collidedict(bomb.rct):
-                beam = None
-                bomb = None
-                
-        #練習3
-        if bomb is not None and beam is not None:
-            if beam.rct.collidedict(bomb.rct):
+            if beam.rct.colliderect(bomb.rct):
                 beam = None
                 bomb = None
                 bird.change_img(6, screen)
@@ -193,13 +217,19 @@ def main():
         
         #練習2
         if bomb is not None:
-            beam.update(screen)
-        if beam is not None:
             bomb.update(screen)
-        
-        #練習1
         if beam is not None:
             beam.update(screen)
+            
+            
+        #追加部分
+        #演習1
+        if bomb is not None and beam is not None:
+            if beam.rct.colliderect(bomb.rct):
+                beam = None
+                bomb = None
+                score.score += 1
+        score.update(screen)
         
         pg.display.update()
         tmr += 1
