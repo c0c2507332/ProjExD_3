@@ -105,9 +105,8 @@ class Beam:
     #     ビームを速度ベクトルself.vx, self.vyに基づき移動させる
     #     引数 screen：画面Surface
     #     """
-        if check_bound(self.rct) == (True, True):
-            self.rct.move_ip(self.vx, self.vy)
-            screen.blit(self.img, self.rct)    
+        self.rct.move_ip(self.vx, self.vy)
+        screen.blit(self.img, self.rct)    
 
 
 class Bomb:
@@ -170,17 +169,10 @@ def main():
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
     bomb = Bomb((255, 0, 0), 10)
-    beam = None  # ゲーム初期化時にはビームは存在しない
+    beams = [] #演習2
+    score = Score() #演習1
     clock = pg.time.Clock()
     tmr = 0
-    
-    
-    #追加部分
-    #演習1
-    score = Score()
-    
-    #演習2
-    beams = []
     
     
     while True:
@@ -195,25 +187,26 @@ def main():
                             
         screen.blit(bg_img, [0, 0])
         
-        if bird.rct.colliderect(bomb.rct):
-            # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-            bird.change_img(8, screen)
-            pg.display.update()
-            time.sleep(1)
-            return
-        
-        #練習2
+        # 1. こうかとんと爆弾の衝突判定
         if bomb is not None:
             if bird.rct.colliderect(bomb.rct):
                 bird.change_img(8, screen)
                 pg.display.update()
                 time.sleep(1)
-                return 
-        if bomb is not None and beam is not None:
-            if beam.rct.colliderect(bomb.rct):
-                beam = None
-                bomb = None
-                bird.change_img(6, screen)
+                return
+        
+        # 2. ビームリスト(beams)と爆弾(bomb)の衝突判定（演習1 + 演習2）
+        if bomb is not None:
+            for beam in beams:
+                if beam.rct.colliderect(bomb.rct):
+                    bomb = None
+                    beams.remove(beam)  # 当たったビームを消去
+                    score.score += 1    # スコアを+1加算
+                    bird.change_img(6, screen)  # 喜ぶこうかとん
+                    break
+
+        # 3. 画面外に出たビームの自動削除（演習2）
+        beams = [beam for beam in beams if check_bound(beam.rct) == (True, True)]
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
@@ -221,30 +214,10 @@ def main():
         #練習2
         if bomb is not None:
             bomb.update(screen)
-        if beam is not None:
-            beam.update(screen)
-            
-            
-        #追加部分
-        #演習1
-        if bomb is not None and beam is not None:
-            if beam.rct.colliderect(bomb.rct):
-                beam = None
-                bomb = None
-                score.score += 1
-        score.update(screen)
-        
-        #演習2
-        for i, bomb in enumerate(bombs):
-            for j, beam in enumerate(beams):
-                if bomb is not None and beam is not None:
-                    if beam.rct.colliderect(bomb.rct):
-                        bombs[i] = None
-                        beams[j] = None
-        beams = [beam for beam in beams if beam is not None and check_bound(beam.rct)[0] and check_bound(beam.rct)[1]]
-        bombs = [bomb for bomb in bombs if bomb is not None]
         for beam in beams:
             beam.update(screen)
+        
+        score.update(screen)
         
         pg.display.update()
         tmr += 1
