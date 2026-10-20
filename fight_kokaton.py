@@ -140,8 +140,28 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
         
-    #追加部分
-
+        
+#追加部分
+#演習1
+class Score:
+    """
+    打ち落とした爆弾の数を表示するスコアクラス
+    """
+    def __init__(self):
+        self.fonto = pg.font.Font(None, 50)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.img = self.fonto.render(f"Score: {self.score}", True, self.color)
+        self.rct = self.img.get_rect()
+        self.rct.center = (100, HEIGHT - 50)
+        
+    def update(self, screen: pg.Surface):
+        """
+        現在のスコア文字列を描画する
+        """
+        self.img = self.fonto.render(f"Score: {self.score}", True, self.color)
+        screen.blit(self.img, self.rct)
+        
 
 
 def main():
@@ -154,7 +174,10 @@ def main():
     clock = pg.time.Clock()
     tmr = 0
     
+    
     #追加部分
+    #演習1
+    score = Score()
     
     
     while True:
@@ -198,7 +221,15 @@ def main():
         if beam is not None:
             beam.update(screen)
             
+            
         #追加部分
+        #演習1
+        if bomb is not None and beam is not None:
+            if beam.rct.colliderect(bomb.rct):
+                beam = None
+                bomb = None
+                score.score += 1
+        score.update(screen)
         
         pg.display.update()
         tmr += 1
