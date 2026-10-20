@@ -23,7 +23,6 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
-
 class Bird:
     """
     ゲームキャラクター（こうかとん）に関するクラス
@@ -100,6 +99,7 @@ class Beam:
         self.rct.centery = bird.rct.centery
         self.rct.left = bird.rct.right
         self.vx, self.vy = +5, 0
+    
     def update(self, screen: pg.Surface):
     #     """
     #     ビームを速度ベクトルself.vx, self.vyに基づき移動させる
@@ -139,6 +139,9 @@ class Bomb:
             self.vy *= -1
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
+        
+    #追加部分
+
 
 
 def main():
@@ -150,6 +153,10 @@ def main():
     beam = None  # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
+    
+    #追加部分
+    
+    
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -171,19 +178,13 @@ def main():
         
         #練習2
         if bomb is not None:
-            if bird.rct.collidedict(bomb.rct):
+            if bird.rct.colliderect(bomb.rct):
                 bird.change_img(8, screen)
                 pg.display.update()
                 time.sleep(1)
                 return 
         if bomb is not None and beam is not None:
-            if beam.rct.collidedict(bomb.rct):
-                beam = None
-                bomb = None
-                
-        #練習3
-        if bomb is not None and beam is not None:
-            if beam.rct.collidedict(bomb.rct):
+            if beam.rct.colliderect(bomb.rct):
                 beam = None
                 bomb = None
                 bird.change_img(6, screen)
@@ -193,13 +194,11 @@ def main():
         
         #練習2
         if bomb is not None:
-            beam.update(screen)
-        if beam is not None:
             bomb.update(screen)
-        
-        #練習1
         if beam is not None:
             beam.update(screen)
+            
+        #追加部分
         
         pg.display.update()
         tmr += 1
