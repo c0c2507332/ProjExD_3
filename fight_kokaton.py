@@ -94,6 +94,10 @@ class Bomb:
 
 
 class Score:
+    """
+    スコア表示用の初期設定を行うメソッド
+    フォント、文字色、初期スコア(0点)、画像Surface、表示位置を設定する
+    """
     def __init__(self):
         self.fonto = pg.font.Font(None, 50)
         self.color = (0, 0, 255)
