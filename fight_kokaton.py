@@ -179,6 +179,9 @@ def main():
     #演習1
     score = Score()
     
+    #演習2
+    beams = []
+    
     
     while True:
         for event in pg.event.get():
@@ -188,7 +191,7 @@ def main():
             #練習1
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
             # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)
+                beams.append(Beam(bird))
                             
         screen.blit(bg_img, [0, 0])
         
@@ -230,6 +233,18 @@ def main():
                 bomb = None
                 score.score += 1
         score.update(screen)
+        
+        #演習2
+        for i, bomb in enumerate(bombs):
+            for j, beam in enumerate(beams):
+                if bomb is not None and beam is not None:
+                    if beam.rct.colliderect(bomb.rct):
+                        bombs[i] = None
+                        beams[j] = None
+        beams = [beam for beam in beams if beam is not None and check_bound(beam.rct)[0] and check_bound(beam.rct)[1]]
+        bombs = [bomb for bomb in bombs if bomb is not None]
+        for beam in beams:
+            beam.update(screen)
         
         pg.display.update()
         tmr += 1
